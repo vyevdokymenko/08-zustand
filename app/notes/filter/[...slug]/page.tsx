@@ -8,11 +8,38 @@ import {
 import NotesClient from "@/app/notes/filter/[...slug]/Notes.client";
 import { fetchNotes } from "@/lib/api";
 import Loader from "@/components/Loader/Loader";
+import { Metadata } from "next";
 
 const NOTES_QUERY_KEY = "notes";
 
 interface NotesFilterProps {
   params: Promise<{ slug: string[] }>;
+}
+
+export async function generateMetadata({
+  params,
+}: NotesFilterProps): Promise<Metadata> {
+  const { slug } = await params;
+  const title = `${slug} | NoteHub`;
+  const description = `Filter notes by ${slug} | NoteHub`;
+  const selfHost = process.env.SELF_HOST ?? "http://localhost:3000";
+
+  return {
+    title: title,
+    description: description,
+    openGraph: {
+      title: title,
+      description: description,
+      url: `${selfHost}/notes/filter/${slug}`,
+      images: {
+        url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+        secureUrl: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+        width: 860,
+        height: 573,
+        alt: "NoteHub logo",
+      },
+    },
+  };
 }
 
 async function NotesContent({ params }: NotesFilterProps) {

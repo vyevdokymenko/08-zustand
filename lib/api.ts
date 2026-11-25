@@ -5,6 +5,7 @@ import { type NewNote, type Note } from "@/types/note";
 
 const api = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
+  timeout: 10000,
 });
 
 api.interceptors.request.use(
