@@ -19,6 +19,19 @@ export const metadata: Metadata = {
   title: "NoteHub",
   description:
     "NoteHub is a simple and efficient application designed for managing personal notes. It helps keep your thoughts organized and accessible in one place, whether you are at home or on the go.",
+  openGraph: {
+    title: "NoteHub",
+    description:
+      "NoteHub is a simple and efficient application designed for managing personal notes. It helps keep your thoughts organized and accessible in one place, whether you are at home or on the go.",
+    url: "https://08-zustand-ubuntu19.vercel.app/",
+    images: {
+      url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+      secureUrl: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+      width: 860,
+      height: 573,
+      alt: "NoteHub logo",
+    },
+  },
 };
 
 interface RootLayoutProps {
