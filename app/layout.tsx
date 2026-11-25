@@ -19,7 +19,7 @@ const robotoSans = Roboto({
   variable: "--font-roboto",
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  display: "auto",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -48,11 +48,8 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children, modal }: RootLayoutProps) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${robotoSans.variable}`}
-    >
-      <body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={robotoSans.variable}>
         <TanStackProvider>
           <Header />
           {children}

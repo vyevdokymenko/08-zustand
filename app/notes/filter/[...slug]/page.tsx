@@ -8,7 +8,7 @@ import {
 import NotesClient from "@/app/notes/filter/[...slug]/Notes.client";
 import { fetchNotes } from "@/lib/api";
 import Loader from "@/components/Loader/Loader";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 const NOTES_QUERY_KEY = "notes";
 
@@ -20,8 +20,8 @@ export async function generateMetadata({
   params,
 }: NotesFilterProps): Promise<Metadata> {
   const { slug } = await params;
-  const title = `${slug} | NoteHub`;
-  const description = `Filter notes by ${slug} | NoteHub`;
+  const title = `${slug[0]} | NoteHub`;
+  const description = `Filter notes by ${slug[0]} | NoteHub`;
   const selfHost = process.env.SELF_HOST ?? "http://localhost:3000";
 
   return {
@@ -30,7 +30,7 @@ export async function generateMetadata({
     openGraph: {
       title: title,
       description: description,
-      url: `${selfHost}/notes/filter/${slug}`,
+      url: `${selfHost}/notes/filter/${slug[0]}`,
       images: {
         url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
         secureUrl: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",

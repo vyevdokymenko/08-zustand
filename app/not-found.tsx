@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "404 - Page not found | NoteHub",
-  description: "Page that are you looking for is not exists",
+  description: "The requested page could not be found",
   openGraph: {
-    title: "NoteHub",
-    description: "Page that are you looking for is not exists",
-    url: "https://08-zustand-rho-topaz.vercel.app",
+    title: "404 - Page not found | NoteHub",
+    description: "The requested page could not be found",
+    url: process.env.SELF_HOST ?? "http://localhost:3000",
     images: {
       url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
       secureUrl: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
