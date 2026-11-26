@@ -1,93 +1,102 @@
-import css from "./NoteForm.module.css";
-import * as Yup from "yup";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import { useId } from "react";
-import { getDefaultNoteTag, type NewNote, noteTags } from "@/types/note";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Loader from "@/components/Loader/Loader";
-import { createNote } from "@/lib/api";
+'use client';
 
+import css from './NoteForm.module.css';
+import { useId } from 'react';
+import { NoteTag, noteTags } from '@/types/note';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import Loader from '@/components/Loader/Loader';
+import { createNote } from '@/lib/api';
+import { useRouter } from 'next/navigation';
+import { useDraftStore } from '@/lib/store/noteStore';
 
-const INITIAL_VALUES: NewNote = {
-  title: "",
-  content: "",
-  tag: getDefaultNoteTag(),
-};
-
-interface NoteFormProps {
-  onClose: () => void;
-  queryKey: string;
-}
-
-function NoteForm({ onClose, queryKey }: NoteFormProps) {
+function NoteForm() {
   const id = useId();
   const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const { draft, setDraft, clearDraft } = useDraftStore();
 
   const createNoteM = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKey] });
-      onClose();
+      router.push('/notes/filter/all');
+      clearDraft();
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 
-  const handleSubmit = (values: NewNote): void => {
-    createNoteM.mutate(values);
+  const handleSubmit = (formData: FormData) => {
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const tag = formData.get('tag') as NoteTag;
+
+    createNoteM.mutate({ title, content, tag });
   };
 
-  const NewNoteSchema = Yup.object().shape({
-    title: Yup.string()
-      .min(3, "Title must be at least 3 characters")
-      .max(50, "Title is too long")
-      .required("Title is required"),
-    content: Yup.string().max(500, "Content is too long"),
-    tag: Yup.string().oneOf(noteTags).required(),
-  });
+  const handleCancel = () => {
+    router.back();
+  };
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = event.target;
+    setDraft({ ...draft, [name]: value });
+  };
 
   return (
-    <Formik initialValues={INITIAL_VALUES} validationSchema={NewNoteSchema} onSubmit={handleSubmit}>
-      <Form className={css.form}>
-        <div className={css.formGroup}>
-          <label htmlFor={`${id}-title`}>Title</label>
-          <Field id={`${id}-title`} type="text" name="title" className={css.input} />
-          <ErrorMessage name="title" component="span" className={css.error} />
-        </div>
+    <form action={handleSubmit} className={css.form}>
+      <div className={css.formGroup}>
+        <label htmlFor={`${id}-title`}>Title</label>
+        <input
+          type="text"
+          id={`${id}-title`}
+          name="title"
+          className={css.input}
+          onChange={handleChange}
+          defaultValue={draft.title}
+        />
+      </div>
 
-        <div className={css.formGroup}>
-          <label htmlFor={`${id}-content`}>Content</label>
-          <Field
-            as="textarea"
-            id={`${id}-content`}
-            name="content"
-            rows={8}
-            className={css.textarea}
-          />
-          <ErrorMessage name="content" component="span" className={css.error} />
-        </div>
+      <div className={css.formGroup}>
+        <label htmlFor={`${id}-content`}>Content</label>
+        <textarea
+          id={`${id}-content`}
+          name="content"
+          className={css.textarea}
+          rows={8}
+          onChange={handleChange}
+          defaultValue={draft.content}
+        />
+      </div>
 
-        <div className={css.formGroup}>
-          <label htmlFor={`${id}-tag`}>Tag</label>
-          <Field as="select" id={`${id}-tag`} name="tag" className={css.select}>
-            <option value="Todo">Todo</option>
-            <option value="Work">Work</option>
-            <option value="Personal">Personal</option>
-            <option value="Meeting">Meeting</option>
-            <option value="Shopping">Shopping</option>
-          </Field>
-          <ErrorMessage name="tag" component="span" className={css.error} />
-        </div>
+      <div className={css.formGroup}>
+        <label htmlFor={`${id}-tag`}>Tag</label>
+        <select
+          id={`${id}-tag`}
+          name="tag"
+          className={css.select}
+          onChange={handleChange}
+          defaultValue={draft.tag}
+        >
+          {noteTags.map(tag => (
+            <option value={tag} key={tag}>
+              {tag}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div className={css.actions}>
-          <button type="button" className={css.cancelButton} onClick={onClose}>
-            Cancel
-          </button>
-          <button type="submit" className={css.submitButton} disabled={createNoteM.isPending}>
-            {createNoteM.isPending ? "Creating..." : "Create note"}
-          </button>
-        </div>
-        {createNoteM.isPending && <Loader />}
-      </Form>
-    </Formik>
+      <div className={css.actions}>
+        <button type="button" className={css.cancelButton} onClick={handleCancel}>
+          Cancel
+        </button>
+        <button type="submit" className={css.submitButton} disabled={createNoteM.isPending}>
+          {createNoteM.isPending ? 'Creating...' : 'Create note'}
+        </button>
+      </div>
+      {createNoteM.isPending && <Loader />}
+    </form>
   );
 }
 

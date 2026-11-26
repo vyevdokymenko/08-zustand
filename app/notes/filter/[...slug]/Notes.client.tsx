@@ -7,10 +7,9 @@ import css from "@/app/notes/filter/[...slug]/NotesPage.module.css";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import { fetchNotes } from "@/lib/api";
-import Modal from "@/components/Modal/Modal";
-import NoteForm from "@/components/NoteForm/NoteForm";
 import Loader from "@/components/Loader/Loader";
 import NoteList from "@/components/NoteList/NoteList";
+import Link from "next/link";
 
 const QUERY_KEY = "notes";
 
@@ -19,7 +18,6 @@ interface NotesClientProps {
 }
 
 function NotesClient({ tag }: NotesClientProps) {
-  const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [page, setPage] = useState<number>(1);
 
@@ -52,17 +50,9 @@ function NotesClient({ tag }: NotesClientProps) {
             forcePage={page - 1}
           />
         )}
-        <button className={css.button} onClick={() => setIsModalOpened(true)}>
+        <Link href="/notes/action/create" className={css.button}>
           Create note +
-        </button>
-        {isModalOpened && (
-          <Modal onClose={() => setIsModalOpened(false)}>
-            <NoteForm
-              queryKey={QUERY_KEY}
-              onClose={() => setIsModalOpened(false)}
-            />
-          </Modal>
-        )}
+        </Link>
       </header>
       {isFetching && <Loader />}
       {isSuccess && data.notes.length > 0 && (

@@ -5,6 +5,7 @@ export const noteTags = [
   "Meeting",
   "Shopping",
 ] as const;
+
 export type NoteTag = (typeof noteTags)[number];
 
 export interface Note {
@@ -21,7 +22,3 @@ export interface NewNote {
   content: string;
   tag: NoteTag;
 }
-
-export const getDefaultNoteTag = (): NoteTag => {
-  return noteTags[0];
-};
